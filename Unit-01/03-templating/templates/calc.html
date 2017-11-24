@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block content %}
+	<form action="/calculate>">
+		<label>num1: </label>
+        <input type="number" name="num1">
+        <label>num2: </label>
+        <input type="number" name="num2">
+        <select name="mydropdown">
+			<option value="add">Add</option>
+			<option value="subtract">Subtract</option>
+			<option value="multiply">Multiply</option>
+			<option value="divide">Divide</option>
+		</select>
+        <input type="submit" value="Submit Form">
+    </form>
+
+{% endblock%}
