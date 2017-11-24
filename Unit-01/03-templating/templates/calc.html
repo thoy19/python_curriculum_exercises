@@ -1,11 +1,11 @@
 {% extends 'base.html' %}
 {% block content %}
-	<form action="/calculate>">
+	<form name='calculation' action="/math" method="POST">
 		<label>num1: </label>
         <input type="number" name="num1">
         <label>num2: </label>
         <input type="number" name="num2">
-        <select name="mydropdown">
+        <select name="calculation">
 			<option value="add">Add</option>
 			<option value="subtract">Subtract</option>
 			<option value="multiply">Multiply</option>
@@ -14,4 +14,5 @@
         <input type="submit" value="Submit Form">
     </form>
 
+	
 {% endblock%}
