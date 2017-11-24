@@ -11,6 +11,7 @@ def person(name, age):
 # PART2
 @app.route('/calculate')
 def calculate(add, subtract, multiply, divide):
+	
 	return render_template('calc.html')
 
 if __name__ == '__main__':
