@@ -1,13 +1,31 @@
 from flask import Flask, render_template, request, url_for, redirect
 from flask_modus import Modus
-from snack import Snacks
+from flask_sqlalchemy import SQLAlchemy
+
 
 app = Flask(__name__)
 modus = Modus(app)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://localhost/snacks_db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+db = SQLAlchemy(app)
+
+
+
+class Snacks(db.Model):
+
+	__tablename__ = 'snacks'
+
+	id = db.Column(db.Integer, primary_key=True)
+	name = db.Column(db.Text)
+	kind = db.Column(db.Text)
+
+	def __init__(self, name, kind):
+		self.name = name
+		self.kind = kind
+
 
 snickers = Snacks(name='snickers', kind='candybar')
 eggs = Snacks(name='eggs', kind='candy')
-
 snack_list = [snickers, eggs]
 
 #SHOW ALL SNACKS
@@ -50,6 +68,9 @@ def edit(id):
 			found_snack = snack
 	return render_template('edit.html', snack=found_snack)
 	
+
+
+
 
 if __name__ == '__main__':
 	app.run(debug=True)
