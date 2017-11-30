@@ -29,7 +29,37 @@ def root():
 
 @app.route('/users', methods=['GET', 'POST'])
 def index():
-	pass	
+	if request.method == 'POST':
+		new_user = User(request.form['first_name'], request.form['last_name'])
+		db.session.add(new_user)
+		db.session.commit()
+		return redirect(url_for('index'))
+	return render_template('index.html', users=User.query.all())
+
+@app.route('/users/new')
+def new():
+	return render_template('new.html')
+
+@app.route('/users/<int:id>', methods=['GET','PATCH', 'DELETE'])
+def show(id):
+	found_user = User.query.get(id)
+	if request.method == b'PATCH':
+		found_user.first_name = request.form['first_name']
+		found_user.last_name = request.form['last_name']
+		db.session.add(found_user)
+		db.session.commit()
+		return redirect(url_for('index'))
+	if request.method == b'DELETE':
+		db.session.delete(found_user)
+		db.session.commit()
+		return redirect(url_for('index'))
+	return render_template('show.html', user=found_user)
+
+@app.route('/users/<int:id>/edit')
+def edit(id):
+	found_user = User.query.get(id)
+	return render_template('edit.html', user=found_user)
+
 
 
 if __name__ == '__main__':
