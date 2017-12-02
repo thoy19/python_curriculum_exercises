@@ -1,11 +1,14 @@
 from flask import Flask, request, render_template, url_for, redirect
 from flask_sqlalchemy import SQLAlchemy
 from flask_modus import Modus
+from forms import UserForm, MessageForm
+import os
 
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://localhost/users-app-db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
 db = SQLAlchemy(app)
 modus = Modus(app)
 
@@ -50,7 +53,8 @@ def index():
 
 @app.route('/users/new')
 def new():
-	return render_template('users/new.html')
+	user_form = UserForm()
+	return render_template('users/new.html', form=user_form)
 
 @app.route('/users/<int:id>', methods=['GET','PATCH', 'DELETE'])
 def show(id):
