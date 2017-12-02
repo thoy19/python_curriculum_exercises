@@ -64,11 +64,14 @@ def new():
 def show(id):
 	found_user = User.query.get(id)
 	if request.method == b'PATCH':
-		found_user.first_name = request.form['first_name']
-		found_user.last_name = request.form['last_name']
-		db.session.add(found_user)
-		db.session.commit()
-		return redirect(url_for('index'))
+		form = UserForm(request.form)
+		if form.validate():
+			found_user.first_name = form.first_name.data
+			found_user.last_name = form.last_name.data
+			db.session.add(found_user)
+			db.session.commit()
+			return redirect(url_for('index'))
+		return render_template('users/edit.html', user=found_user, form=form)
 	if request.method == b'DELETE':
 		db.session.delete(found_user)
 		db.session.commit()
@@ -78,7 +81,8 @@ def show(id):
 @app.route('/users/<int:id>/edit')
 def edit(id):
 	found_user = User.query.get(id)
-	return render_template('users/edit.html', user=found_user)
+	user_form = UserForm(obj=found_user)
+	return render_template('users/edit.html', user=found_user, form=user_form)
 
 
 # MESSAGES 

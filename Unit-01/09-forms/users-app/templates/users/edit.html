@@ -4,8 +4,20 @@
 <h1>Edit: {{ user.first_name }} {{ user.last_name }}</h1>
 
 <form action="{{ url_for('show', id=user.id) }}?_method=PATCH" method="POST">
-	<input type="text" name="first_name" value="{{ user.first_name }}">
-	<input type="text" name="last_name" value="{{ user.last_name }}">
-	<input type="submit" value="edit user">
+	{{ form.hidden_tag() }}
+	{% for field in form  if field.widget.input_type != 'hidden' %}
+		<p>
+			{{field.label }}
+			{{ field }}
+			<span>
+				{% if field.errors %}
+					{% for error in field.errors %}
+						{{error}}
+					{% endfor %}
+				{% endif %}
+			</span>
+		</p>
+	{% endfor %}
+	<button>Edit user</button>
 </form>
 {% endblock %}
