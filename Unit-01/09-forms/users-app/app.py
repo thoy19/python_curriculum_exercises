@@ -1,7 +1,7 @@
 from flask import Flask, request, render_template, url_for, redirect
 from flask_sqlalchemy import SQLAlchemy
 from flask_modus import Modus
-from forms import UserForm, MessageForm
+from forms import UserForm, MessageForm, DeleteForm
 import os
 
 
@@ -44,6 +44,7 @@ def root():
 
 @app.route('/users', methods=['GET', 'POST'])
 def index():
+	delete_form = DeleteForm()
 	if request.method == 'POST':
 		form = UserForm(request.form)
 		if form.validate():
@@ -53,7 +54,7 @@ def index():
 			return redirect(url_for('index'))
 		else:
 			return render_template('users/new.html', form=form)
-	return render_template('users/index.html', users=User.query.all())
+	return render_template('users/index.html', users=User.query.all(), delete_form=delete_form)
 
 @app.route('/users/new')
 def new():
@@ -73,8 +74,10 @@ def show(id):
 			return redirect(url_for('index'))
 		return render_template('users/edit.html', user=found_user, form=form)
 	if request.method == b'DELETE':
-		db.session.delete(found_user)
-		db.session.commit()
+		delete_form = DeleteForm(request.form)
+		if delete_form.validate():
+			db.session.delete(found_user)
+			db.session.commit()
 		return redirect(url_for('index'))
 	return render_template('users/show.html', user=found_user)
 
