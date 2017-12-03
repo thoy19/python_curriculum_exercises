@@ -105,7 +105,8 @@ def messages_index(user_id):
 # NEW MESSAGE
 @app.route('/users/<int:user_id>/messages/new', methods=['GET','POST'])
 def messages_new(user_id):
-	return render_template('messages/new.html', user=User.query.get(user_id))
+	message_form = MessageForm()
+	return render_template('messages/new.html', user=User.query.get(user_id), form=message_form)
 
 #EDIT MESSAGE FORM
 @app.route('/users/<int:user_id>/messages/<int:id>/edit')
