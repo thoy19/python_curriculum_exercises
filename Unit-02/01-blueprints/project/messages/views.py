@@ -31,7 +31,7 @@ def new(user_id):
 	return render_template('messages/new.html', user=User.query.get(user_id), form=message_form)
 
 #EDIT MESSAGE FORM
-@messages_blueprint.route('/edit')
+@messages_blueprint.route('/<int:id>/edit')
 def edit(user_id, id):
 	found_message = Message.query.get(id)
 	message_form = MessageForm(obj=found_message)
@@ -58,3 +58,7 @@ def show(user_id, id):
 			flash('Message Deleted!')
 		return redirect(url_for('messages.index', user_id=user_id))
 	return render_template('messages/show.html', message=found_message)
+
+
+
+

@@ -2,7 +2,7 @@
 
 {% block content %}
 <h1>Edit message</h1>
-<form method='POST' action="{{ url_for('messages.show', user_id=message.user_id, id=message.id) }}?_method=PATCH">
+<form action="{{ url_for('messages.show', user_id=message.user_id, id=message.id) }}?_method=PATCH" method='POST' >
 	{{ form.hidden_tag() }}
 	{% for field in form if field.widget.input_type != 'hidden' %}
 		<p>
