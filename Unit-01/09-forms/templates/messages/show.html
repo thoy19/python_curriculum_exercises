@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Here are your messages!</h1>
+	{% for message in messages %}
+	<p>
+		{{ message.content }} 
+		<br>
+		<!-- <a href="{{ url_for('edit', id=user.id) }}">Edit User</a>
+		<form action="{{ url_for('show', id=user.id) }}?_method=DELETE" method="POST">
+			<button>Delete User</button>
+		</form> -->
+	</p>
+	{% endfor %}
+{% endblock %}

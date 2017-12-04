@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Here is your user!</h1>
+	{% for user in users %}
+	<p>
+		{{ user.first_name }} {{ user.last_name }}
+		<br>
+		<a href="{{ url_for('edit', id=user.id) }}">Edit User</a>
+		<form action="{{ url_for('show', id=user.id) }}?_method=DELETE" method="POST">
+			<button>Delete User</button>
+		</form>
+	</p>
+	{% endfor %}
+{% endblock %}

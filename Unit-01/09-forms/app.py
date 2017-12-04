@@ -36,7 +36,6 @@ class Message(db.Model):
 		self.user_id = user_id
 
 
-
 # USERS ROUTES
 
 @app.route('/')
@@ -58,10 +57,43 @@ def new():
 
 @app.route('/users/<int:id>', methods=['GET','PATCH','DELETE'])
 def show(id):
-	return render_template('users/show.html', id=User.query.get(id))
+	if request.method == b'PATCH':
+		found_user = User.query.get(id)
+		found_user.first_name = request.form['first_name']
+		found_user.last_name = request.form['last_name']
+		db.session.add(found_user)
+		db.session.commit()
+		return redirect(url_for('index'))
+	if request.method == b'DELETE':
+		found_user = User.query.get(id)
+		db.session.delete(found_user)
+		db.session.commit()
+		return redirect(url_for('index'))
+	return render_template('users/show.html', user=found_user)
 
 @app.route('/users/<int:id>/edit')
 def edit(id):
+	found_user = User.query.get(id)
+	return render_template('users/edit.html', user=found_user)
+
+
+
+# MESSAGES ROUTES
+
+@app.route('/users/<int:user_id>/messages', methods=['GET','POST'])
+def messages_index(user_id):
+	return render_template('messages/index.html', user=User.query.get(user_id))
+
+@app.route('/users/<int:user_id>/messages/new')
+def messages_new(user_id):
+	return render_template('messages/new.html', user=User.query.get(user_id))
+
+@app.route('/users/<int:user_id>/messages/<int:id>', methods=['GET', 'PATCH','DELETE'])
+def messages_show(user_id, id):
+	return render_template('messages/show.html', messages=Message.query.all())
+
+@app.route('/users/<int:user_id>/messages/<int:id>/edit')
+def messages_edit(user_id, id):
 	pass
 
 
