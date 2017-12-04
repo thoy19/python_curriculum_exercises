@@ -4,7 +4,7 @@
 	<h1>Create new message:</h1>
 	<!-- Insert for for creating new user -->
 	<form action="{{ url_for('messages_index', user_id=user.id) }}" method="POST">
-		<label for="content">message...</label>
+		<label for="content">Message:</label>
 		<input type="text" name="content">
 		<button>Submit</button>
 	</form>

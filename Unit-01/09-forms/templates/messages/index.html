@@ -7,8 +7,8 @@
 	<p>
 		{{ message.content }} 
 		<br>
-		<a href="{{ url_for('messages_edit', id=user.id) }}">New Message</a>
-		<form action="{{ url_for('messages_show', id=user.id) }}?_method=DELETE" method="POST">
+		<a href="{{ url_for('messages_edit', user_id=user.id, id=message.id) }}">Edit Message</a>
+		<form action="{{ url_for('messages_show', user_id=user.id, id=message.id) }}?_method=DELETE" method="POST">
 			<button>Delete Message</button>
 		</form>
 	</p>

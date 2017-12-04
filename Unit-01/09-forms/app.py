@@ -82,6 +82,11 @@ def edit(id):
 
 @app.route('/users/<int:user_id>/messages', methods=['GET','POST'])
 def messages_index(user_id):
+	if request.method == 'POST':
+		new_message = Message(request.form['content'], user_id)
+		db.session.add(new_message)
+		db.session.commit()
+		return redirect(url_for('messages_index', user_id=user_id))
 	return render_template('messages/index.html', user=User.query.get(user_id))
 
 @app.route('/users/<int:user_id>/messages/new')
@@ -90,11 +95,23 @@ def messages_new(user_id):
 
 @app.route('/users/<int:user_id>/messages/<int:id>', methods=['GET', 'PATCH','DELETE'])
 def messages_show(user_id, id):
+	if request.method == b'PATCH':
+		found_message = Message.query.get(id)
+		found_message.content = request.form['content']
+		db.session.add(found_message)
+		db.session.commit()
+		return redirect(url_for('messages_index', user_id=user_id))
+	if request.method == b'DELETE':
+		found_message = Message.query.get(id)
+		db.session.delete(found_message)
+		db.session.commit()
+		return redirect(url_for('messages_index', user_id=user_id))
 	return render_template('messages/show.html', messages=Message.query.all())
 
 @app.route('/users/<int:user_id>/messages/<int:id>/edit')
 def messages_edit(user_id, id):
-	pass
+	found_message = Message.query.get(id)
+	return render_template('messages/edit.html', user=User.query.get(user_id), message=found_message)
 
 
 
