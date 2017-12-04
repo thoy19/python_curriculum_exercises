@@ -5,7 +5,15 @@
 	<title>Users App!!</title>
 </head>
 <body>
-	<a href="{{ url_for('index') }}">Home</a>
+	<a href="{{ url_for('users.index') }}">Home</a>
+	{% with messages = get_flashed_messages() %}
+		{% if messages %}
+			{% for message in messages %}
+			<p>{{message}}</p>
+			{% endfor %}
+		{% endif %}
+	{% endwith %}
+
 	{% block content %}
 	{% endblock %}
 </body>
