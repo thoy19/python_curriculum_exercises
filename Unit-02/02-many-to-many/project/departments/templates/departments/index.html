@@ -1,14 +1,13 @@
 {% extends 'base.html' %}
 
 {% block content %}
-	<a href="{{ url_for('departments.new', user_id=employee.id) }}">Enter a new department!</a>
+	<a href="{{ url_for('departments.new') }}">Enter a new department!</a>
 	<h1>Here are the departments!</h1>
 
 		{% for department in departments %}
 		<p>
 			Name: {{ department.name }}
 		<br>
-		<a href="{{ url_for('departments.edit', user_id=employee.id, id=department.id) }}">Edit Department</a>
 		</p>
 		{% endfor %}
 

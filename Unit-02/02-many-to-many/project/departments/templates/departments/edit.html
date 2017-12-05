@@ -1,5 +1,36 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h1>Edit Employee:</h1>
+<h1>Edit Department:</h1>
+
+	<form method='POST' action="{{ url_for('departments.show', user_id=employee.id, id=department.id) }}?_method=PATCH">
+		{{ form.csrf_token }}
+
+		<p>
+			{{ form.name(placeholder='name') }}
+			<span>
+				{% if form.name.errors %}
+					{% for error in form.name.errors %}
+						{{ error }}
+					{% endfor %}
+				{% endif %}
+			</span>
+		</p>
+		<br>
+		<p>
+			{{ form.years_at_company(placeholder='years_at_company') }}
+				<span>
+					{% if form.years_at_company.errors %}
+						{% for error in form.years_at_company.errors %}
+							{{ error }}
+						{% endfor %}
+					{% endif %}
+				</span>
+		</p>
+		<br>
+		<p>
+			{{ form.departments }}
+		<button>Submit</button>
+	</form>
+
 {% endblock %}
