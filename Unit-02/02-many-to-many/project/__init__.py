@@ -8,7 +8,7 @@ modus = Modus(app)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://localhost/many-many-example'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['SECRET_KEY'] = 'PLEASEJUSTEVERYTHINGWORK'
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
 db = SQLAlchemy(app)
 
 
