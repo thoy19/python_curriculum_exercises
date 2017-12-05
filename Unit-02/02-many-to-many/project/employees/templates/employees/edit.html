@@ -3,10 +3,32 @@
 {% block content %}
 	<h1>Edit Employee:</h1>
 	<form method='POST' action="{{ url_for('employees.show', id=employee.id) }}?_method=PATCH">
-		<label for="name">Name:</label>
-		<input type="text" name="name" value="{{ employee.name }}">
-		<label for="years_at_company">Years at company:</label>
-		<input type="integer" name="years_at_company" value="{{ employee.years_at_company }}">
+		{{ form.csrf_token }}
+
+		<p>
+			{{ form.name(placeholder='name') }}
+			<span>
+				{% if form.name.errors %}
+					{% for error in form.name.errors %}
+						{{ error }}
+					{% endfor %}
+				{% endif %}
+			</span>
+		</p>
+		<br>
+		<p>
+			{{ form.years_at_company(placeholder='years_at_company') }}
+				<span>
+					{% if form.years_at_company.errors %}
+						{% for error in form.years_at_company.errors %}
+							{{ error }}
+						{% endfor %}
+					{% endif %}
+				</span>
+		</p>
+		<br>
+		<p>
+			{{ form.departments }}
 		<button>Submit</button>
 	</form>
 	

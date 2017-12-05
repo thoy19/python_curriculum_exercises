@@ -1,5 +1,21 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h1>This is your employee!</h1>
+<h1>This is your employee show page!</h1>
+
+		<p>
+			Name: {{ employee.name }}
+			<br>
+			Years at company: {{ employee.years_at_company }}
+			<br>
+			{% for department in employee.departments %}
+				{{ department.name }}
+			{% endfor %}
+		</p>
+
+	<p>Delete employee?</p>
+
+	<form action="{{ url_for('employees.show', id=employee.id) }}?_method=DELETE" method="POST">
+		<input type="submit" value="Delete Employee">
+	</form>
 {% endblock %}
