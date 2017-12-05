@@ -17,7 +17,7 @@ from project.departments.views import departments_blueprint
 
 # register our blueprints with the application
 app.register_blueprint(employees_blueprint, url_prefix='/employees')
-app.register_blueprint(departments_blueprint, url_prefix='/departments')
+app.register_blueprint(departments_blueprint, url_prefix='/employees/<int:user_id>/departments')
 
 @app.route('/')
 def root():
