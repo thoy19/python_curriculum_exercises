@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block content %}
+	<h1>Edit Employee:</h1>
+	<form method='POST' action="{{ url_for('employees.show', id=employee.id) }}?_method=PATCH">
+		<label for="name">Name:</label>
+		<input type="text" name="name">
+		<label for="years_at_company">Years at company:</label>
+		<input type="integer" name="years_at_company">
+		<button>Submit</button>
+	</form>
+	
+{% endblock %}
