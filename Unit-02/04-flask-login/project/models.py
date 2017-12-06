@@ -21,6 +21,17 @@ class User(db.Model):
 		self.password = bcrypt.generate_password_hash(password).decode('UTF-8')
 
 
+		  # notice we are making a class method here since we will be invoking this using User.authenticate()    
+	@classmethod
+    # let's pass some username and some password 
+	def authenticate(cls, username, password):
+	    found_user = cls.query.filter_by(username = username).first()
+	    if found_user:
+	        authenticated_user = bcrypt.check_password_hash(found_user.password, password)
+	        if authenticated_user:
+	            return found_user # make sure to return the user so we can log them in by storing information in the session
+	    return False
+
 class Message(db.Model):
 
 	__tablename__ = 'messages'
@@ -33,4 +44,5 @@ class Message(db.Model):
 # DML
 	def __init__(self, content, user_id):
 		self.content = content
-		self.user_id = user_id
+		self.user_id = user_id	
+		

@@ -1,5 +1,5 @@
 from flask import redirect, render_template, request, url_for, flash, Blueprint
-from project.users.forms import UserForm
+from project.users.forms import UserForm, LoginForm
 from project.models import User
 from project import db, bcrypt
 
@@ -28,7 +28,7 @@ def signup():
 
 @users_blueprint.route('/login', methods = ["GET", "POST"])
 def login():
-    form = UserForm(request.form)
+    form = LoginForm(request.form)
     if request.method == "POST" and form.validate():
         found_user = User.query.filter_by(username = form.data['username']).first()
         if found_user:
