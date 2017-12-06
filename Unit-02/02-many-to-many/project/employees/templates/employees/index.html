@@ -6,9 +6,9 @@
 
 		{% for employee in employees %}
 		<p>
-			Name: {{ employee.name }}
+			<b>Name:</b> {{ employee.name }}
 			<br>
-			Years at company: {{ employee.years_at_company }}
+			<b>Years at company:</b> {{ employee.years_at_company }}
 			<!-- {{ employee.departments }} -->
 		<br>
 		<a href="{{ url_for('employees.show', id=employee.id) }}">View Employee</a>

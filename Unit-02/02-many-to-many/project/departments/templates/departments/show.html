@@ -4,8 +4,11 @@
 <h1>This is your department show page!</h1>
 		{{ form.csrf_token }}
 		<p>
-			Department: {{ department.name }}
+			<b>Department:</b> {{ department.name }}
 			<br>
+			{% for employee in department.employees %}
+				<b>Employees in department:</b> {{ employee.name }}
+			{% endfor %}
 		</p>
 
 	<p>Delete department?</p>
