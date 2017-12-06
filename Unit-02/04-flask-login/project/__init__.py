@@ -23,5 +23,5 @@ app.register_blueprint(messages_blueprint, url_prefix='/users/<int:user_id>/mess
 
 @app.route('/')
 def root():
-	return redirect(url_for('users.index'))
+	return redirect(url_for('users.login'))
 
