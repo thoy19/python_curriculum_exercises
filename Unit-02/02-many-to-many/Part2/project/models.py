@@ -16,6 +16,10 @@ class User(db.Model):
 		self.first_name = first_name
 		self.last_name = last_name
 
+message_tag_table = db.Table('message_tags',
+    db.Column('message_id', db.Integer, db.ForeignKey('messages.id')),
+    db.Column('tag_id', db.Integer, db.ForeignKey('tags.id'))
+)
 
 class Message(db.Model):
 
@@ -26,7 +30,20 @@ class Message(db.Model):
 	id = db.Column(db.Integer, primary_key=True)
 	content = db.Column(db.Text)
 	user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+	tags = db.relationship('Tag', secondary=message_tag_table,
+                           backref=db.backref('messages'))
 # DML
 	def __init__(self, content, user_id):
 		self.content = content
 		self.user_id = user_id
+
+class Tag(db.Model):
+
+	__tablename__ = 'tags'
+	__table_args__ = {'extend_existing': True} 
+
+	id = db.Column(db.Integer, primary_key=True)
+	text = db.Column(db.Text)
+
+	def __init__(self, text):
+		self.text = text
