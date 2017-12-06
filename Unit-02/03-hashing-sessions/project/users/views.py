@@ -79,6 +79,7 @@ def current_user():
 @ensure_logged_in
 @ensure_correct_user
 def show(id):
+    delete_form = DeleteForm()
     found_user = User.query.get(id)
     if request.method == b'PATCH':
         form = UserForm(request.form)
@@ -93,21 +94,23 @@ def show(id):
             return redirect(url_for('users.welcome'))
         return render_template('users/edit.html', user=found_user, form=form)
     if request.method == b'DELETE':
-    	delete_form = DeleteForm(request.form)
-    	if delete_form.validate():
-    		db.session.delete(found_user)
-    		db.session.commit()
-    		flash('User Deleted!')
-    	return redirect(url_for('users.index'))
-    return render_template('users/show.html', user=found_user)
+        delete_form = DeleteForm(request.form)
+        if delete_form.validate():
+            db.session.delete(found_user)
+            db.session.commit()
+            session.pop('user_id', None)
+            flash('User Deleted!')
+            return redirect(url_for('users.welcome'))
+    return render_template('users/show.html', user=found_user, delete_form=delete_form)
 
 @users_blueprint.route('/<int:id>/edit')
 @ensure_logged_in
 @ensure_correct_user
 def edit(id):
-	found_user = User.query.get(id)
-	user_form = UserForm(obj=found_user)
-	return render_template('users/edit.html', user=found_user, form=user_form)
+    delete_form = DeleteForm()
+    found_user = User.query.get(id)
+    user_form = UserForm(obj=found_user)
+    return render_template('users/edit.html', user=found_user, form=user_form, delete_form=delete_form)
 
 @users_blueprint.route('/logout')
 def logout():
