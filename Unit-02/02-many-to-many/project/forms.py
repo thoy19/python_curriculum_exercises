@@ -16,3 +16,11 @@ class NewEmployeeForm(FlaskForm):
 
     def set_choices(self):
         self.departments.choices = [(d.id, d.name) for d in Department.query.all()]
+
+class MultiCheckboxField(SelectMultipleField):
+    widget = widgets.ListWidget(prefix_label=False)
+    option_widget = widgets.CheckboxInput()
+
+class NewDepartmentForm(FlaskForm):
+    name = TextField('Name', validators=[DataRequired()])
+   

@@ -9,9 +9,15 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap-theme.min.css">
 </head>
 <body>
-	<a href="{{ url_for('employees.index') }}">Home</a>
-	<a href="{{ url_for('departments.index') }}">Departments</a>
-	{% block content %}
-	{% endblock %}
+	<div class="container">
+		<div class="col-12">
+			<a class='col-12' href="{{ url_for('employees.index') }}">Employees</a>
+			<a href="{{ url_for('departments.index') }}">Departments</a>
+			<br>
+			<br>
+			{% block content %}
+			{% endblock %}
+		</div>
+	</div>
 </body>
 </html>

@@ -5,10 +5,12 @@
 	<h1>Here are the departments!</h1>
 
 		{% for department in departments %}
-		<p>
-			Name: {{ department.name }}
-		<br>
-		</p>
+			<p>
+				{{ department.name }}
+				<br>
+				<a href="{{ url_for('departments.edit', id=department.id) }}">Edit Department</a> 
+				<a href="{{ url_for('departments.show', id=department.id) }}">View Department</a> 
+			</p>
 		{% endfor %}
 
 {% endblock %}

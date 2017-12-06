@@ -31,20 +31,27 @@ def new():
 
 @employees_blueprint.route('/<int:id>/edit')
 def edit(id):
-	from IPython import embed; embed()
 	employee = Employee.query.get(id)
 	departments = [department.id for department in employee.departments]
 	form = NewEmployeeForm(departments=departments)
 	form.set_choices()
+	form.name.data = employee.name
+	form.years_at_company.data = employee.years_at_company
 	return render_template('employees/edit.html', departments=departments, employee=employee, form=form)
 
 @employees_blueprint.route('/<int:id>', methods=['GET','DELETE','PATCH'])
 def show(id):
 	employee = Employee.query.get(id)
 	if request.method == b'PATCH':
+		form = NewEmployeeForm(request.form)
+		form.set_choices()
 		employee = Employee.query.get(id)
 		employee.name = request.form['name']
 		employee.years_at_company = request.form['years_at_company']
+		employee.departments = []
+		for department in form.departments.data:
+			employee.departments.append(Department.query.get(department))
+
 		db.session.add(employee)
 		db.session.commit()
 		return redirect(url_for('employees.index'))
