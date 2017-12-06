@@ -10,7 +10,8 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap-theme.min.css">
 </head>
 <body>
-	<a href="{{ url_for('users.login') }}">Home</a>
+	<a href="{{ url_for('users.welcome') }}">Home</a>
+
 	{% with messages = get_flashed_messages() %}
 		{% if messages %}
 			{% for message in messages %}

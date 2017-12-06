@@ -92,7 +92,7 @@ def show(id):
             db.session.commit()
             flash('User Updated!')
             return redirect(url_for('users.welcome'))
-        return render_template('users/edit.html', user=found_user, form=form)
+        return render_template('users/edit.html', user=found_user, form=form, delete_form=delete_form)
     if request.method == b'DELETE':
         delete_form = DeleteForm(request.form)
         if delete_form.validate():
