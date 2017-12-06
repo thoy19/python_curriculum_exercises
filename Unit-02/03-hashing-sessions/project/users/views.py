@@ -1,7 +1,8 @@
-from flask import redirect, render_template, request, url_for, flash, Blueprint
-from project.users.forms import UserForm, LoginForm
+from flask import redirect, render_template, request, url_for, Blueprint, session, flash, g
+from project.users.forms import UserForm, LoginForm, DeleteForm
 from project.models import User
 from project import db, bcrypt
+from functools import wraps
 
 from sqlalchemy.exc import IntegrityError
 
@@ -12,6 +13,34 @@ users_blueprint = Blueprint(
 	template_folder='templates'
 	)
 
+def ensure_logged_in(fn):
+    @wraps(fn)
+    def wrapper(*args, **kwargs):
+        if not session.get('user_id'):
+            flash("Please log in first")
+            return redirect(url_for('users.login'))
+        return fn(*args, **kwargs)
+    return wrapper
+
+def ensure_correct_user(fn):
+    # make sure we preserve the corrent __name__, and __doc__ values for our decorator
+    @wraps(fn)
+    def wrapper(*args, **kwargs):
+        # in the params we have something called id, is it the same as the user logged in?
+        if kwargs.get('id') != session.get('user_id'):
+            # if not, redirect them back home
+            flash("Not Authorized")
+            return redirect(url_for('users.welcome'))
+        # otherwise, move on with all the arguments passed in!
+        return fn(*args, **kwargs)
+    return wrapper
+
+@users_blueprint.route('/welcome')
+@ensure_logged_in
+def welcome():
+    return render_template('users/welcome.html', users=User.query.all())
+
+
 @users_blueprint.route('/signup', methods =["GET", "POST"])
 def signup():
     form = UserForm(request.form)
@@ -21,6 +50,7 @@ def signup():
             db.session.add(new_user)
             db.session.commit()
         except IntegrityError as e:
+            flash("Invalid submission. Please try again.")
             return render_template('users/signup.html', form=form)
         return redirect(url_for('users.login'))
     return render_template('users/signup.html', form=form)
@@ -30,62 +60,57 @@ def signup():
 def login():
     form = LoginForm(request.form)
     if request.method == "POST" and form.validate():
-        found_user = User.query.filter_by(username = form.data['username']).first()
-        if found_user:
-            authenticated_user = bcrypt.check_password_hash(found_user.password, form.data['password'])
-            if authenticated_user:
-                return redirect(url_for('users.welcome'))
+        user = User.authenticate(form.data['username'], form.data['password'])
+        if user:
+            session['user_id'] = user.id
+            flash("You've successfully logged in!")
+            return redirect(url_for('users.welcome'))
     return render_template('users/login.html', form=form)
 
-@users_blueprint.route('/welcome')
-def welcome():
-    return render_template('users/welcome.html')
+@users_blueprint.before_request
+def current_user():
+    if session.get('user_id'):
+        g.current_user = User.query.get(session['user_id'])
+    else:
+        g.current_user = None
 
 
-# @users_blueprint.route('/', methods=['GET', 'POST'])
-# def index():
-# 	delete_form = DeleteForm()
-# 	if request.method == 'POST':
-# 		form = UserForm(request.form)
-# 		if form.validate():
-# 			new_user = User(request.form['first_name'], request.form['last_name'])
-# 			db.session.add(new_user)
-# 			db.session.commit()
-# 			flash('User Created!')
-# 			return redirect(url_for('users.index'))
-# 		else:
-# 			return render_template('users/new.html', form=form)
-# 	return render_template('users/index.html', users=User.query.all(), delete_form=delete_form)
+@users_blueprint.route('/<int:id>', methods=['GET','PATCH', 'DELETE'])
+@ensure_logged_in
+@ensure_correct_user
+def show(id):
+    found_user = User.query.get(id)
+    if request.method == b'PATCH':
+        form = UserForm(request.form)
+        if form.validate():
+            found_user.first_name = form.first_name.data
+            found_user.last_name = form.last_name.data
+            found_user.username = form.username.data
+            found_user.password = bcrypt.generate_password_hash(form.password.data).decode('UTF-8')
+            db.session.add(found_user)
+            db.session.commit()
+            flash('User Updated!')
+            return redirect(url_for('users.welcome'))
+        return render_template('users/edit.html', user=found_user, form=form)
+    if request.method == b'DELETE':
+    	delete_form = DeleteForm(request.form)
+    	if delete_form.validate():
+    		db.session.delete(found_user)
+    		db.session.commit()
+    		flash('User Deleted!')
+    	return redirect(url_for('users.index'))
+    return render_template('users/show.html', user=found_user)
 
-# @users_blueprint.route('/new')
-# def new():
-# 	user_form = UserForm()
-# 	return render_template('users/new.html', form=user_form)
+@users_blueprint.route('/<int:id>/edit')
+@ensure_logged_in
+@ensure_correct_user
+def edit(id):
+	found_user = User.query.get(id)
+	user_form = UserForm(obj=found_user)
+	return render_template('users/edit.html', user=found_user, form=user_form)
 
-# @users_blueprint.route('/<int:id>', methods=['GET','PATCH', 'DELETE'])
-# def show(id):
-# 	found_user = User.query.get(id)
-# 	if request.method == b'PATCH':
-# 		form = UserForm(request.form)
-# 		if form.validate():
-# 			found_user.first_name = form.first_name.data
-# 			found_user.last_name = form.last_name.data
-# 			db.session.add(found_user)
-# 			db.session.commit()
-# 			flash('User Updated!')
-# 			return redirect(url_for('users.index'))
-# 		return render_template('users/edit.html', user=found_user, form=form)
-# 	if request.method == b'DELETE':
-# 		delete_form = DeleteForm(request.form)
-# 		if delete_form.validate():
-# 			db.session.delete(found_user)
-# 			db.session.commit()
-# 			flash('User Deleted!')
-# 		return redirect(url_for('users.index'))
-# 	return render_template('users/show.html', user=found_user)
-
-# @users_blueprint.route('/<int:id>/edit')
-# def edit(id):
-# 	found_user = User.query.get(id)
-# 	user_form = UserForm(obj=found_user)
-# 	return render_template('users/edit.html', user=found_user, form=user_form)
+@users_blueprint.route('/logout')
+def logout():
+  session.pop('user_id', None)
+  flash('You have been signed out.')
+  return redirect(url_for('users.login'))
