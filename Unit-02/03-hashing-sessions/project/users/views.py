@@ -1,6 +1,6 @@
 from flask import redirect, render_template, request, url_for, Blueprint, session, flash, g
 from project.users.forms import UserForm, LoginForm, DeleteForm
-from project.models import User
+from project.models import User, Message
 from project import db, bcrypt
 from functools import wraps
 
@@ -34,6 +34,11 @@ def ensure_correct_user(fn):
         # otherwise, move on with all the arguments passed in!
         return fn(*args, **kwargs)
     return wrapper
+
+@users_blueprint.route('/messages')
+def messages():
+    messages = Message.query.all()
+    return render_template('users/messages.html', messages=messages)
 
 @users_blueprint.route('/welcome')
 @ensure_logged_in
@@ -73,7 +78,6 @@ def current_user():
         g.current_user = User.query.get(session['user_id'])
     else:
         g.current_user = None
-
 
 @users_blueprint.route('/<int:id>', methods=['GET','PATCH', 'DELETE'])
 @ensure_logged_in
