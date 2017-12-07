@@ -1,13 +1,37 @@
-from flask import redirect, render_template, request, url_for, flash, Blueprint
+from flask import redirect, render_template, request, url_for, flash, Blueprint, session
 from project.messages.forms import MessageForm, DeleteForm
 from project.models import Message, User
 from project import db
+from functools import wraps
+
 
 messages_blueprint = Blueprint(
 	'messages',
 	__name__,
 	template_folder='templates'
 	)
+
+def ensure_logged_in(fn):
+    @wraps(fn)
+    def wrapper(*args, **kwargs):
+        if not session.get('user_id'):
+            flash("Please log in first")
+            return redirect(url_for('users.login'))
+        return fn(*args, **kwargs)
+    return wrapper
+
+def ensure_correct_user(fn):
+    # make sure we preserve the corrent __name__, and __doc__ values for our decorator
+    @wraps(fn)
+    def wrapper(*args, **kwargs):
+        # in the params we have something called id, is it the same as the user logged in?
+        if kwargs.get('id') != session.get('user_id'):
+            # if not, redirect them back home
+            flash("Not Authorized")
+            return redirect(url_for('users.welcome'))
+        # otherwise, move on with all the arguments passed in!
+        return fn(*args, **kwargs)
+    return wrapper
 
 @messages_blueprint.route('/', methods=['GET', 'POST'])
 def index(user_id):
@@ -32,6 +56,8 @@ def new(user_id):
 
 #EDIT MESSAGE FORM
 @messages_blueprint.route('/<int:id>/edit')
+@ensure_logged_in
+@ensure_correct_user
 def edit(user_id, id):
 	found_message = Message.query.get(id)
 	message_form = MessageForm(obj=found_message)
@@ -39,6 +65,8 @@ def edit(user_id, id):
 
 # EDIT MESSAGE
 @messages_blueprint.route('/<int:id>', methods=['GET','PATCH','DELETE'])
+@ensure_logged_in
+@ensure_correct_user
 def show(user_id, id):
 	found_message = Message.query.get(id)
 	if request.method == b'PATCH':
