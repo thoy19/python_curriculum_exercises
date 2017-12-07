@@ -50,6 +50,7 @@ def index(user_id):
 
 # NEW MESSAGE
 @messages_blueprint.route('/new', methods=['GET','POST'])
+@ensure_correct_user
 def new(user_id):
 	message_form = MessageForm()
 	return render_template('messages/new.html', user=User.query.get(user_id), form=message_form)
